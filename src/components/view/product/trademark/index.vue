@@ -26,10 +26,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { reqHasTrademark } from "../../../../../src/api/product/trademark";
 let currentPage = ref<number>(1);
 //每页展示多少数据
 let limit = ref<number>(3);
 let disabled = ref<boolean>(false);
+//获取已有品牌的接口封装成一个函数
+const getHasTrademark = async () => {
+  let result = await reqHasTrademark(currentPage.value, limit.value);
+  console.log(result);
+};
+onMounted(() => {
+  try {
+    getHasTrademark();
+  } catch (error) {
+    console.error("Error fetching trademarks:", error);
+  }
+});
 </script>
 <style scoped></style>

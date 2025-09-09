@@ -5,7 +5,11 @@ import { reqLogin, reqUserInfo, reqLogout } from "../../api/user";
 //引入常量路由
 import { constantRoute } from "../../router/routes";
 import { GET_TOKEN, SET_TOKEN, REMOVE_TOKEN } from "@/utils/token";
-
+import type {
+  loginForm,
+  loginResponseData,
+  userInfoResponseData,
+} from "@/api/user/type";
 let useUserStore = defineStore("user", {
   state: () => {
     return {
@@ -19,17 +23,15 @@ let useUserStore = defineStore("user", {
   //处理异步方法
   actions: {
     //用户登录方法
-    async userLogin(data: any) {
-      let result: any = await reqLogin(data);
+    async userLogin(data: loginForm) {
+      let result: loginResponseData = await reqLogin(data);
       // 因为响应拦截器返回了 response.data，所以需要类型断言
 
       if (result.code === 200) {
         this.token = result.data;
-        console.log("result", result);
-        // SET_TOKEN(result.data);
-        localStorage.setItem("TOKEN", result.data);
-        console.log("登录成功，token:", this.token);
-        return result; // 登录成功
+        SET_TOKEN(result.data);
+
+        return "ok"; // 登录成功
       } else {
         console.log(
           "登录失败，code:",
@@ -42,10 +44,10 @@ let useUserStore = defineStore("user", {
     },
     async userInfo() {
       //获取用户信息存储在仓库中国
-      let result = await reqUserInfo();
+      let result: userInfoResponseData = await reqUserInfo();
       console.log("用户信息：", result);
       if (result.code == 200) {
-        this.username = result.data.username;
+        this.username = result.data.name;
         this.avatar = result.data.avatar;
         this.token = result.data;
         SET_TOKEN(result.data);
@@ -62,6 +64,7 @@ let useUserStore = defineStore("user", {
         this.token = "";
         this.username = "";
         this.avatar = "";
+
         REMOVE_TOKEN();
         return "ok";
       } else {

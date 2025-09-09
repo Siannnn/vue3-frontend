@@ -56,8 +56,12 @@ const Logout = async () => {
   //向服务器发出退出请求
   //仓库中数据清空
   //跳转到登录页面
-  await userStore.userLogout();
-  $router.push({ path: "/login", query: { redirect: $route.path } });
+  try {
+    await userStore.userLogout();
+    $router.push({ path: "/login" });
+  } catch (err) {
+    $router.push({ path: "/login" });
+  }
 };
 </script>
 <script lang="ts">

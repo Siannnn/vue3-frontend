@@ -4,26 +4,25 @@ export interface loginForm {
   password: string;
 }
 
-export interface loginResponseData {
+//定义全部接口返回数据类型
+export interface ResponseData {
   code: number;
   message?: string; // 添加可选的 message 字段
+  ok: boolean;
+}
+export interface loginResponseData extends ResponseData {
   data: {
     token: string;
   };
 }
 
 //服务器返回用户信息相关的数据类型
-export interface userResponseData {
-  code: number;
+export interface userInfoResponseData extends ResponseData {
   data: {
-    userId: number;
     avatar: string;
-    username: string;
-    password: string;
-    desc: string;
-    roles: string[];
     buttons: string[];
+    name: string;
+    roles: string[];
     routes: string[];
-    token?: string;
   };
 }

@@ -15,7 +15,7 @@ let userStore = useUserStore(pinia);
 router.beforeEach(async (to: any, from: any, next: any) => {
   document.title = (setting.title + "-" + to.meta.title) as string; //动态修改网页标题
   nprogress.start(); //进度条开始
-  let token = userStore.token;
+  let token = userStore.token || localStorage.getItem("TOKEN");
   let username = userStore.username;
 
   if (token) {
