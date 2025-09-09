@@ -14,9 +14,13 @@ request.interceptors.request.use((config) => {
 
   // 获取token（从localStorage中获取）
   // const token = localStorage.getItem("TOKEN");
-  let userStore = useUserStore(); //获取用户相关小仓库获取内部token,登录成功后携带给服务器
-  if (userStore.token) {
-    config.headers.token = userStore.token;
+  // let userStore = useUserStore(); //获取用户相关小仓库获取内部token,登录成功后携带给服务器
+  // if (userStore.token) {
+  //   config.headers.token = userStore.token;
+  // }
+  const token = localStorage.getItem("TOKEN");
+  if (token) {
+    config.headers.token = token;
   }
   // 如果token存在，则添加到请求头中
   // if (token) {

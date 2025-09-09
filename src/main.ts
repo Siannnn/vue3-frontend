@@ -25,6 +25,8 @@ import router from "./router";
 app.use(router);
 import pinia from "./store";
 app.use(pinia);
+import { createPinia } from "pinia";
+app.use(createPinia());
 //测试登录假接口
 // import axios from "axios";
 // axios({

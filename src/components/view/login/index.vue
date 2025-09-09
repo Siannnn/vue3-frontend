@@ -50,8 +50,8 @@ let $route = useRoute(); //获取路由对象
 let useStore = useUserStore();
 let passwordValue: boolean = true;
 let Loginform = reactive({
-  username: "",
-  password: "",
+  username: "admin",
+  password: "111111",
 });
 let loginForm = ref();
 const validatorUsername = (rule: any, value: any, callback: any) => {

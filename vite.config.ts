@@ -1,4 +1,4 @@
-import { defineConfig, type ConfigEnv,loadEnv } from "vite";
+import { defineConfig, type ConfigEnv, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 //引入svg需要用的插件
@@ -39,13 +39,19 @@ export default defineConfig(({ command, mode }: ConfigEnv) => {
     //代理跨域
     server: {
       proxy: {
-        [env.VITE_APP_BASE_API]: {
-          //获取数据的服务器地址设置
-          target: env.VITE_SERVE,
-          //需要代理跨域
+        // [env.VITE_APP_BASE_API]: {
+        //   //获取数据的服务器地址设置
+        //   target: env.VITE_SERVE,
+        //   //需要代理跨域
+        //   changeOrigin: true,
+        //   rewrite: (path) => path.replace(/^\/api/, ""),
+        // },
+        "/api": {
+          target: "http://127.0.0.1:10086",
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      }
+          rewrite: (path) => path.replace(/^\/api/, ""), // 去掉前面的 /api
+        },
+      },
     },
-  });
+  };
+});

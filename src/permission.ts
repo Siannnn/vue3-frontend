@@ -8,10 +8,9 @@ import setting from "./setting"; //引入项目配置
 import useUserStore from "./store/modules/user";
 import pinia from "./store";
 let userStore = useUserStore(pinia);
-console.log(userStore.token);
 
 //全局守卫：项目中任意路由切换都会触发的钩子
-console.log("permission.ts文件被加载了");
+
 //全局前置守卫 访问某一路由前会执行的函数
 router.beforeEach(async (to: any, from: any, next: any) => {
   document.title = (setting.title + "-" + to.meta.title) as string; //动态修改网页标题
@@ -19,7 +18,6 @@ router.beforeEach(async (to: any, from: any, next: any) => {
   let token = userStore.token;
   let username = userStore.username;
 
-  console.log(to.path);
   if (token) {
     if (to.path == "/login") {
       next({ path: "/" }); //如果已经登录还想访问登录页，跳转到首页
@@ -33,7 +31,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
           next();
         } catch (error) {
           //token过期
-          userStore.userLogout(); //清除token
+          await userStore.userLogout(); //清除token
           next({ path: "/login", query: { redirect: to.path } }); //跳转登录页
         }
       }

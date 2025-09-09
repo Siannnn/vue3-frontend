@@ -52,11 +52,11 @@ const fullScreen = () => {
 const userStore = useUserStore();
 let $router = useRouter(); //获取路由器对象
 let $route = useRoute(); //获取当前路由对象
-const Logout = () => {
+const Logout = async () => {
   //向服务器发出退出请求
   //仓库中数据清空
   //跳转到登录页面
-  userStore.userLogout();
+  await userStore.userLogout();
   $router.push({ path: "/login", query: { redirect: $route.path } });
 };
 </script>

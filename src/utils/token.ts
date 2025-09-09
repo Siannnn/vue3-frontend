@@ -1,7 +1,7 @@
 //封装本地存储存储数据与读取数据方法
 //存储数据
 export const SET_TOKEN = (token: string) => {
-  localStorage.getItem(token);
+  localStorage.setItem("TOKEN", token);
 };
 
 //本地存储获取数据
