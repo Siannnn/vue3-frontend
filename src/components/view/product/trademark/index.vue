@@ -11,7 +11,7 @@
           align="center"
           type="index"
         ></el-table-column>
-        <!-- 默认展示数据用div -->
+        <!--默认展示数据用div -->
         <el-table-column label="品牌名称" prop="tmName"> </el-table-column>
         <el-table-column label="品牌logo">
           <template #="{ row }">
@@ -28,7 +28,7 @@
               type="primary"
               size="mini"
               icon="Edit"
-              @click="updateTrademark"
+              @click="updateTrademark(row)"
             ></el-button>
             <el-button
               type="danger"
@@ -52,7 +52,11 @@
       />
     </el-card>
     <!-- 对话框组件--添加品牌 修改品牌 -->
-    <el-dialog v-model="dialogTableVisible" title="添加品牌" width="500">
+    <el-dialog
+      v-model="dialogTableVisible"
+      :title="trademarkParams.id ? '修改品牌' : '添加品牌'"
+      width="500"
+    >
       <el-form style="width: 80%">
         <el-form-item label="品牌名称" label-width="80px">
           <el-input
@@ -68,11 +72,11 @@
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
-            :headers="getUploadHeaders"
+            :headers="getUploadHeaders()"
           >
             <img
               v-if="trademarkParams.logoUrl"
-              :src="trademarkParams.logoUrl"
+              :src="'http://127.0.0.1:10086' + trademarkParams.logoUrl"
               class="avatar"
             />
             <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
@@ -106,7 +110,7 @@ let currentPage = ref<number>(1);
 let limit = ref<number>(2);
 let disabled = ref<boolean>(false);
 let total = ref<number>(0);
-
+let dialogTableVisible = ref<boolean>(false);
 let trademarkArr = ref<Records>([]);
 //获取已有品牌的接口封装成一个函数
 const getHasTrademark = async (pager = 1) => {
@@ -121,7 +125,6 @@ const getHasTrademark = async (pager = 1) => {
     // currentPage.value = result.data.current;
     trademarkArr.value = result.data.records;
   }
-  console.log(result);
 };
 onMounted(() => {
   try {
@@ -140,28 +143,70 @@ const sizeChange = () => {
   getHasTrademark();
 };
 
-let dialogTableVisible = ref<boolean>(false);
 const addTrademark = () => {
   dialogTableVisible.value = true;
+  // 清除所有数据，确保是添加模式
+  trademarkParams.id = undefined;
+  trademarkParams.tmName = "";
+  trademarkParams.logoUrl = "";
 };
-const updateTrademark = () => {
+const updateTrademark = (row: TradeMark) => {
   dialogTableVisible.value = true;
+  // ES^语法合并对象
+  Object.assign(trademarkParams, row);
+
+  // 或者也可以逐个赋值（两种方法都可以）
+  // trademarkParams.id = row.id;
+  // trademarkParams.tmName = row.tmName;
+  // trademarkParams.logoUrl = row.logoUrl;
+};
+
+const deleteTrademark = () => {
+  console.log("删除品牌功能待实现");
 };
 const cancel = () => {
   dialogTableVisible.value = false;
 };
 const confirm = async () => {
-  let result: any = await reqAddOrUpdateTrademark(trademarkParams);
-  if (result.code == 200) {
-    ElMessage({
-      type: "success",
-      message: "品牌添加成功",
-    });
+  try {
+    // 验证必填字段
+    if (!trademarkParams.tmName || !trademarkParams.tmName.trim()) {
+      ElMessage.error("品牌名称不能为空");
+      return;
+    }
 
-    dialogTableVisible.value = false;
-    getHasTrademark();
-  } else {
-    ElMessage.error("品牌添加失败");
+    // 暂时注释logo验证，先测试只有名称的情况
+    // if (!trademarkParams.logoUrl || !trademarkParams.logoUrl.trim()) {
+    //   ElMessage.error("品牌logo不能为空，请先上传图片");
+    //   return;
+    // }
+    let result: any = await reqAddOrUpdateTrademark(trademarkParams);
+
+    if (result.code == 200) {
+      ElMessage({
+        type: "success",
+        message: trademarkParams.id ? "品牌修改成功" : "品牌添加成功",
+      });
+      getHasTrademark(trademarkParams.id ? currentPage.value : 1);
+      dialogTableVisible.value = false;
+    } else if (result.code == 205) {
+      // 服务繁忙，提示用户稍后重试，但不关闭对话框
+      console.error("服务繁忙，详细信息:", result);
+      ElMessage({
+        type: "warning",
+        message: "服务器繁忙，请稍后点击确认重试",
+        duration: 5000,
+      });
+    } else {
+      console.error("品牌操作失败，详细信息:", result);
+      ElMessage.error(
+        `品牌操作失败: ${result.message || "未知错误，状态码：" + result.code}`
+      );
+    }
+  } catch (error: any) {
+    console.error("品牌操作出现异常:", error);
+    console.error("异常详情:", error.response || error.message || error);
+    ElMessage.error("品牌操作出现异常: " + (error.message || "请检查网络连接"));
   }
 };
 
@@ -171,14 +216,13 @@ let trademarkParams = reactive<TradeMark>({
 });
 const getUploadHeaders = () => {
   const token = localStorage.getItem("TOKEN") || "";
-  Authorization: "Bearer " + localStorage.getItem("TOKEN");
-  alert("getUploadHeaders called! token=" + token);
-  console.log("getUploadHeaders called! token=", token);
-  return { token };
+
+  return {
+    token: token,
+    Authorization: "Bearer " + token,
+  };
 };
 const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
-  // 上传文件之前 可以约束文件大小、类型
-  console.log(rawFile);
   if (
     rawFile.type !== "image/png" &&
     rawFile.type !== "image/jpg" &&
@@ -192,15 +236,13 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
   }
   return true;
 };
-const handleAvatarSuccess: UploadProps["onSuccess"] = (
-  response,
-  uploadFile
-) => {
-  // 上传成功的回调
-  trademarkParams.logoUrl = response.data;
-  console.log(response);
-  //图片上传成功后返回图片地址
-  trademarkParams.logoUrl = response.data;
+const handleAvatarSuccess: UploadProps["onSuccess"] = (response) => {
+  if (response.code === 200) {
+    trademarkParams.logoUrl = response.data;
+    ElMessage.success("图片上传成功");
+  } else {
+    ElMessage.error("图片上传失败: " + (response.message || "未知错误"));
+  }
 };
 </script>
 <style scoped>
