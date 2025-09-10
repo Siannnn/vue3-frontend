@@ -30,7 +30,7 @@ let useUserStore = defineStore("user", {
       if (result.code === 200) {
         this.token = result.data;
         SET_TOKEN(result.data);
-
+        console.log("登录成功，token:", result.data);
         return "ok"; // 登录成功
       } else {
         console.log(
@@ -49,8 +49,8 @@ let useUserStore = defineStore("user", {
       if (result.code == 200) {
         this.username = result.data.name;
         this.avatar = result.data.avatar;
-        this.token = result.data;
-        SET_TOKEN(result.data);
+        // this.token = result.data;  会把token包装成object object对象
+        // SET_TOKEN(result.data);
         return "ok";
       } else {
         return Promise.reject("获取用户信息失败");
