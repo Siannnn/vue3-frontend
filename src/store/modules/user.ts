@@ -26,7 +26,7 @@ let useUserStore = defineStore("user", {
     async userLogin(data: loginForm) {
       let result: loginResponseData = await reqLogin(data);
       // 因为响应拦截器返回了 response.data，所以需要类型断言
-
+      console.log("登录结果：", result);
       if (result.code === 200) {
         this.token = result.data;
         SET_TOKEN(result.data);

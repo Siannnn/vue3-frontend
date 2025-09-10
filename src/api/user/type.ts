@@ -11,9 +11,7 @@ export interface ResponseData {
   ok: boolean;
 }
 export interface loginResponseData extends ResponseData {
-  data: {
-    token: string;
-  };
+  data: string;
 }
 
 //服务器返回用户信息相关的数据类型

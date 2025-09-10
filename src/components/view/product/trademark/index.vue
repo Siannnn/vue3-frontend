@@ -68,6 +68,7 @@
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
+            :headers="getUploadHeaders"
           >
             <img
               v-if="trademarkParams.logoUrl"
@@ -88,7 +89,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from "vue";
-import { reqHasTrademark } from "../../../../../src/api/product/trademark";
+import {
+  reqHasTrademark,
+  reqAddOrUpdateTrademark,
+} from "../../../../../src/api/product/trademark";
 import type {
   Records,
   TradeMarkResponseData,
@@ -146,15 +150,32 @@ const updateTrademark = () => {
 const cancel = () => {
   dialogTableVisible.value = false;
 };
-const confirm = () => {
-  dialogTableVisible.value = false;
+const confirm = async () => {
+  let result: any = await reqAddOrUpdateTrademark(trademarkParams);
+  if (result.code == 200) {
+    ElMessage({
+      type: "success",
+      message: "品牌添加成功",
+    });
+
+    dialogTableVisible.value = false;
+    getHasTrademark();
+  } else {
+    ElMessage.error("品牌添加失败");
+  }
 };
 
 let trademarkParams = reactive<TradeMark>({
   tmName: "",
   logoUrl: "",
 });
-
+const getUploadHeaders = () => {
+  const token = localStorage.getItem("TOKEN") || "";
+  Authorization: "Bearer " + localStorage.getItem("TOKEN");
+  alert("getUploadHeaders called! token=" + token);
+  console.log("getUploadHeaders called! token=", token);
+  return { token };
+};
 const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
   // 上传文件之前 可以约束文件大小、类型
   console.log(rawFile);
@@ -176,6 +197,7 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (
   uploadFile
 ) => {
   // 上传成功的回调
+  trademarkParams.logoUrl = response.data;
   console.log(response);
   //图片上传成功后返回图片地址
   trademarkParams.logoUrl = response.data;
