@@ -1,8 +1,8 @@
 //引入项目中全部的全局组件
 import SvgIcon from "./SvgIcon/index.vue";
-
+import Category from "./Category/index.vue";
 //全局对象
-const allGlobalComponent = { SvgIcon };
+const allGlobalComponent = { SvgIcon, Category };
 // console.log(Object.keys(allGlobalComponent));
 
 export default {
