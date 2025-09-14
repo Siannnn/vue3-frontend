@@ -18,6 +18,7 @@ export interface AttrValue {
   id?: number;
   valueName: string;
   attrId?: number;
+  flag?: boolean;
 }
 export type AttrValueList = AttrValue[];
 export interface Attr {
