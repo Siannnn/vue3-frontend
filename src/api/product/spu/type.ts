@@ -61,7 +61,7 @@ export interface SaleAttrValue {
   isChecked?: null | string;
 }
 export type spuSaleAttrValueList = SaleAttrValue[];
-export interface saleAttr {
+export interface SaleAttr {
   id?: number;
   createTime: string;
   updateTime: string;
@@ -72,7 +72,7 @@ export interface saleAttr {
 }
 //spu已有的销售属性接口返回的数据类型
 export interface SaleAttrResponseData extends ResponseData {
-  data: saleAttr[];
+  data: SaleAttr[];
 }
 //整个项目的销售属性
 export interface HasSaleAttr {

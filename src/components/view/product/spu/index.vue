@@ -35,7 +35,7 @@
               size="small"
               icon="Edit"
               title="修改SPU"
-              @click="updateSpu"
+              @click="updateSpu(row)"
             ></el-button>
             <el-button
               type="primary "
@@ -64,7 +64,7 @@
         @current-change="getSPUList()"
       />
     </div>
-    <SpuForm v-show="scene == 1" @changeScene="changeScene"></SpuForm>
+    <SpuForm ref="spu" v-show="scene == 1" @changeScene="changeScene"></SpuForm>
     <SkuForm v-show="scene == 2"></SkuForm>
   </el-card>
 </template>
@@ -73,12 +73,18 @@
 import { ref, watch } from "vue";
 import { reqSPUList } from "@/api/product/spu";
 import useCategoryStore from "@/store/modules/category";
-import type { HasSpuResponseData, Records } from "@/api/product/spu/type";
+import type {
+  HasSpuResponseData,
+  Records,
+  SpuData,
+} from "@/api/product/spu/type";
 import SpuForm from "./spuForm.vue";
 import SkuForm from "./skuForm.vue";
 //场景值
 let scene = ref<number>(0);
 let CategoryStore = useCategoryStore();
+//获取子组件实例SpuForm
+let spu = ref<any>();
 let currentPage = ref<number>(1);
 let size = ref<string>("default");
 let limit = ref<number>(3);
@@ -122,8 +128,11 @@ const addSpu = () => {
 const changeScene = (num: number) => {
   scene.value = num; //切换场景
 };
-const updateSpu = () => {
+const updateSpu = (row: SpuData) => {
   scene.value = 1; //修改spu
+  console.log(row);
+  //调用子组件方法获取完整的spu数组
+  spu.value.initHasSpuData(row);
 };
 // 当前页改变处理
 // const handleCurrentChange = (newPage: number) => {
