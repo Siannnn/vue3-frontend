@@ -139,6 +139,7 @@ const getHasTrademark = async (pager = 1) => {
     total.value = result.data.total;
     // currentPage.value = result.data.current;
     trademarkArr.value = result.data.records;
+    console.log("已有品牌", trademarkArr.value);
   }
 };
 onMounted(() => {

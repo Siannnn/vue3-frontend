@@ -5,6 +5,7 @@ import type {
   SpuHasImg,
   SaleAttrResponseData,
   HasSaleAttrResponseData,
+  SpuData,
 } from "./type";
 enum API {
   SPU_LIST_URL = "/admin/product/",
@@ -16,6 +17,11 @@ enum API {
   SPUHASSALEATTR_URL = "/admin/product/spuSaleAttrList/",
   //获取整个项目的销售属性
   ALLSALEATTR_URL = "/admin/product/baseSaleAttrList",
+
+  //添加spu属性
+  ADDSPU_URL = "/admin/product/saveSpuInfo",
+  //修改spu属性
+  UPDATESPU_URL = "/admin/product/updateSpuInfo",
 }
 
 export const reqSPUList = (
@@ -37,3 +43,11 @@ export const reqSpuHasSaleAttr = (spuId: number) =>
 
 export const reqAllSaleAttr = () =>
   request.get<any, HasSaleAttrResponseData>(API.ALLSALEATTR_URL);
+
+export const reqAddOrUpdateSpu = (data: SpuData) => {
+  if (data.id) {
+    return request.post<any, any>(API.UPDATESPU_URL, data);
+  } else {
+    return request.post<any, any>(API.ADDSPU_URL, data);
+  }
+};
