@@ -10,7 +10,7 @@ export interface SpuData {
   spuName: string;
   description: string;
   category3Id: number | string;
-  spuSaleAttrList: null | SaleAttr[];
+  spuSaleAttrList: SaleAttr[];
   tmId: number | string;
   spuImageList: null | SpuImg[];
 }
@@ -58,7 +58,7 @@ export interface SaleAttrValue {
   createTime?: string;
   updateTime?: string;
   spuId?: number;
-  baseSaleAttrId: number;
+  baseSaleAttrId: number | string; //销售属性id
   saleAttrValueName: string;
   isChecked?: null | string;
 }
@@ -68,9 +68,11 @@ export interface SaleAttr {
   createTime?: string;
   updateTime?: string;
   spuId?: number;
-  baseSaleAttrId: number; //销售属性id
+  baseSaleAttrId: number | string; //销售属性id
   saleAttrName: string; //销售属性名称
   spuSaleAttrValueList: spuSaleAttrValueList; //销售属性值对象
+  flag?: boolean; //展示spuForm 属性值tag的input状态
+  saleAttrValue?: string; //收集tag销售属性值
 }
 //spu已有的销售属性接口返回的数据类型
 export interface SaleAttrResponseData extends ResponseData {
@@ -82,5 +84,5 @@ export interface HasSaleAttr {
   name: string;
 }
 export interface HasSaleAttrResponseData extends ResponseData {
-  data: HasSaleAttr;
+  data: HasSaleAttr[];
 }

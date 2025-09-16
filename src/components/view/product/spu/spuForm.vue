@@ -85,6 +85,7 @@
               closable
               v-for="(item, itemIndex) in row.spuSaleAttrValueList"
               :key="item.id || itemIndex"
+              @close="row.spuSaleAttrValueList.splice(itemIndex, 1)"
               >{{ item.saleAttrValueName }}</el-tag
             >
             <!-- <el-input
@@ -96,7 +97,21 @@
               @keyup.enter="handleInputConfirm"
               @blur="handleInputConfirm"
             /> -->
-            <el-button icon="Plus" type="primary" size="small"></el-button>
+            <el-input
+              placeholder="请输入属性值"
+              v-if="row.flag == true"
+              v-model="row.saleAttrValue"
+              class="w-20"
+              size="small"
+              @blur="toLook(row)"
+            />
+            <el-button
+              v-else
+              icon="Plus"
+              type="primary"
+              size="small"
+              @click="toEdit(row)"
+            ></el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120px">
@@ -112,7 +127,13 @@
       </el-table>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size="default">保存</el-button>
+      <el-button
+        :disabled="saleAttr.length > 0 ? false : true"
+        type="primary"
+        @click="save"
+        size="default"
+        >保存</el-button
+      >
       <el-button type="primary" size="defaul t" @click="cancel">取消</el-button>
     </el-form-item>
   </el-form>
@@ -135,14 +156,14 @@ import {
   reqAllTradeMark,
   reqSpuHasSaleAttr,
   reqAllSaleAttr,
+  reqAddOrUpdateSpu,
 } from "@/api/product/spu";
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import type { InputInstance } from "element-plus";
 defineProps(["scene"]);
-const cancel = () => {
-  $emit("changeScene", 0);
-};
+
 let $emit = defineEmits(["changeScene"]);
 
 //存储所有数据
@@ -160,7 +181,18 @@ let SpuParams = ref<SpuData>({
   spuImageList: [],
   spuSaleAttrList: [],
 });
-
+const addSaleAttr = async () => {
+  SpuParams.value.spuSaleAttrList = saleAttr.value;
+  let [id, name] = saleAttrIdAndName.value.split(":"); //切割成数组
+  saleAttr.value.push({
+    // spuId: SpuParams.value.id,
+    baseSaleAttrId: id,
+    saleAttrName: name,
+    spuSaleAttrValueList: [],
+  });
+  //清空
+  saleAttrIdAndName.value = "";
+};
 //全部销售属性
 let allSaleAttr = ref<HasSaleAttr[]>([]);
 const initHasSpuData = async (spu: SpuData) => {
@@ -178,6 +210,7 @@ const initHasSpuData = async (spu: SpuData) => {
   console.log("全部销售属性", result3);
   AllTradeMark.value = result.data;
   allSaleAttr.value = result3.data;
+  console.log(result3.data);
   imgList.value = result1.data.map((item) => {
     return {
       name: item.imgName,
@@ -185,11 +218,8 @@ const initHasSpuData = async (spu: SpuData) => {
     };
   });
   saleAttr.value = result2.data;
-  allSaleAttr.value = result3.data;
 };
-defineExpose({
-  initHasSpuData,
-});
+
 //照片墙点击预览时触发的钩子
 let dialogVisible = ref(false);
 let dialogImageUrl = ref(""); //预览图片地址
@@ -231,6 +261,94 @@ let unSelectSaleAttr = computed(() => {
 
 //收集还未选择的销售属性
 let saleAttrIdAndName = ref<string>("");
-const addSaleAttr = () => {};
+
+//tag 销售属性值
+const InputRef = ref<InputInstance>();
+
+const toEdit = (row: SaleAttr) => {
+  row.flag = true;
+  row.saleAttrValue = "";
+  nextTick(() => {
+    InputRef.value!.input!.focus();
+  });
+};
+const toLook = (row: SaleAttr) => {
+  row.flag = false;
+  if ((row.saleAttrValue as string).trim() == "") {
+    ElMessage.error("输入不能为空");
+    return;
+  }
+  let repeat = row.spuSaleAttrValueList.some((item) => {
+    return item.saleAttrValueName == row.saleAttrValue;
+  });
+  if (repeat) {
+    ElMessage.error("输入重复");
+    return;
+  }
+  if (row.saleAttrValue) {
+    row.spuSaleAttrValueList.push({
+      saleAttrValueName: row.saleAttrValue,
+      baseSaleAttrId: row.baseSaleAttrId,
+      // spuId: row.spuId,
+    });
+    row.saleAttrValue = "";
+  }
+};
+
+//保存spuForm
+const save = async () => {
+  //照片墙
+  SpuParams.value.spuImageList = imgList.value.map((item) => {
+    return {
+      id: item.id,
+      imgName: item.name,
+      imgUrl: (item.response && item.response.data) || item.url,
+      spuId: SpuParams.value.id,
+    };
+  });
+  //销售属性值
+  SpuParams.value.spuSaleAttrList = saleAttr.value;
+  //请求
+  let result = await reqAddOrUpdateSpu(SpuParams.value);
+  console.log(result);
+  if (result.code == 200) {
+    ElMessage.success("保存成功");
+    $emit("changeScene", {
+      flag: 0,
+      params: SpuParams.value.id ? "update" : "add",
+    }); //通知父组件切换场景为0 并留在当前页面
+  } else {
+    ElMessage.error(result.message);
+  }
+};
+//取消
+const cancel = () => {
+  $emit("changeScene", { flag: 0, params: "" });
+};
+//添加一个新的spu初始化请求方法
+const initAddSpu = async (c3Id: number | string) => {
+  SpuParams.value.category3Id = c3Id;
+  let result: AllTradeMark = await reqAllTradeMark(); //全部品牌数据
+  let result1: HasSaleAttrResponseData = await reqAllSaleAttr(); //全部销售属性数据
+  //存储数据
+  AllTradeMark.value = result.data;
+  allSaleAttr.value = result1.data;
+  //清空数据
+  Object.assign(SpuParams.value, {
+    id: undefined,
+    spuName: "",
+    description: "",
+    tmId: "",
+    spuImageList: [],
+    spuSaleAttrList: [],
+  });
+  imgList.value = []; //因为spuImgList=imgList 照片墙存在imgList中
+  saleAttr.value = [];
+  saleAttrIdAndName.value = "";
+};
+defineExpose({
+  initHasSpuData,
+  initAddSpu,
+});
 </script>
 <style scoped></style>

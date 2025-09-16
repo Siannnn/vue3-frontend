@@ -61,7 +61,7 @@
         layout=" prev, pager, next, jumper,->,sizes,total, "
         :total="total"
         @size-change="handleSizeChange"
-        @current-change="getSPUList()"
+        @current-change="getSPUList"
       />
     </div>
     <SpuForm ref="spu" v-show="scene == 1" @changeScene="changeScene"></SpuForm>
@@ -124,9 +124,17 @@ const handleSizeChange = (newSize: number) => {
 };
 const addSpu = () => {
   scene.value = 1;
+  spu.value.initAddSpu(CategoryStore.c3ID); //调用子组件的方法初始化数据(确保添加spu时el-select中有数据)
 };
-const changeScene = (num: number) => {
-  scene.value = num; //切换场景
+const changeScene = (obj: any) => {
+  scene.value = obj.flag; //切换场景
+  if (obj.params == "update") {
+    //更新就留在当前页
+    getSPUList(currentPage.value);
+  } else {
+    getSPUList(1);
+  }
+  //再次获取全部已有spu数据
 };
 const updateSpu = (row: SpuData) => {
   scene.value = 1; //修改spu
