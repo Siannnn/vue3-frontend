@@ -34,13 +34,12 @@
             v-for="(item, index) in attrArr"
             :key="item.id"
             :label="item.attrName"
-            :value="item.AttrId"
-            ><el-select>
+            ><el-select v-model="item.attrIdAndValueId" style="width: 200px">
               <el-option
                 v-for="(attrValue, index) in item.attrValueList"
                 :key="attrValue.id"
                 :label="attrValue.valueName"
-                :value="attrValue.id"
+                :value="`${item.id}:${attrValue.id}`"
               ></el-option> </el-select
           ></el-form-item>
         </el-form>
@@ -48,22 +47,26 @@
       <el-form-item label="销售属性">
         <el-form>
           <el-form-item
-            v-for="(item, index) in saleAttr"
+            v-for="(item, index) in saleArr"
             :key="item.id"
             :label="item.saleAttrName"
           >
-            <el-select multiple>
+            <el-select
+              multiple
+              v-model="item.saleIdAndValueId"
+              style="width: 300px"
+            >
               <el-option
                 v-for="(saleAttrValue, index) in item.spuSaleAttrValueList"
                 :label="saleAttrValue.saleAttrValueName"
                 :key="saleAttrValue.id"
-                value="red"
+                :value="`${item.id}:${saleAttrValue.id}`"
               ></el-option>
             </el-select>
           </el-form-item>
         </el-form>
       </el-form-item>
-      <el-table border :data="imgArr" style="margin-bottom: 20px">
+      <el-table border :data="imgArr" style="margin-bottom: 20px" ref="table">
         <el-table-column type="selection" width="80px" align-center="true">
         </el-table-column>
         <el-table-column label="图片">
@@ -78,12 +81,14 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #="{ row, $index }">
-            <el-button type="primary" size="small">设置默认</el-button>
+            <el-button type="primary" size="small" @click="handler(row)"
+              >设置默认</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
       <el-form-item>
-        <el-button type="primary" icon="Plus">保存</el-button>
+        <el-button type="primary" icon="Plus" @click="save">保存</el-button>
         <el-button type="danger" icon="Close" @click="cancel">取消</el-button>
       </el-form-item>
     </el-form>
@@ -92,26 +97,34 @@
 
 <script setup lang="ts">
 import { reqAttr } from "@/api/product/attr";
-import { reqSpuImageList, reqSpuHasSaleAttr } from "@/api/product/spu";
+import {
+  reqSpuImageList,
+  reqSpuHasSaleAttr,
+  reqAddSku,
+} from "@/api/product/spu";
 import { ref, reactive } from "vue";
 import type { SaleAttr, SkuData } from "@/api/product/spu/type";
+import { ElMessage } from "element-plus";
 let $emit = defineEmits(["changeScene"]);
 //存储平台属性、销售属性、
 let attrArr = ref<any[]>([]);
-let saleAttr = ref<SaleAttr[]>([]);
+let saleArr = ref<SaleAttr[]>([]);
 let imgArr = ref<any[]>([]);
+//获取table组件实例
+let table = ref<any>(null);
 //收集sku参数
 let skuParams = reactive<SkuData>({
   tmId: "",
   skuName: "",
   category3Id: "",
   spuId: "",
-  price: 0,
-  weight: 0,
+  price: "",
+  weight: "",
   skuDesc: "",
   skuAttrValueList: [],
   skuSaleAttrValueList: [],
   skuImageList: [],
+  skuDefaultImg: "",
 });
 const cancel = () => {
   $emit("changeScene", { flag: 0, params: "" });
@@ -133,12 +146,59 @@ const initSkuData = async (
 
   //获取销售属性
   let result1 = await reqSpuHasSaleAttr(spu.id);
-  saleAttr.value = result1.data;
+  saleArr.value = result1.data;
 
   //获取图片列表
   let result2 = await reqSpuImageList(spu.id);
   imgArr.value = result2.data;
 };
 defineExpose({ initSkuData });
+
+//设置默认图片
+const handler = (row: any) => {
+  //复选框选中  使用的是table的方法，不是事件
+  //为保证唯一：点击时全清空再选中
+  imgArr.value.forEach((item) => {
+    table.value.toggleRowSelection(item, false);
+  }); //清空
+  table.value.toggleRowSelection(row);
+
+  //收集图片地址
+  skuParams.skuDefaultImg = row.imgUrl;
+};
+//保存
+const save = async () => {
+  //平台属性值的id
+  skuParams.skuAttrValueList = attrArr.value.reduce((prev: any, next: any) => {
+    if (next.attrIdAndValueId) {
+      let [attrId, valueId] = next.attrIdAndValueId.split(":");
+      prev.push({ attrId: attrId, valueId: valueId });
+    }
+    return prev;
+  }, []);
+  console.log(skuParams.skuAttrValueList);
+  //销售属性值的id
+  skuParams.skuSaleAttrValueList = saleArr.value.reduce(
+    (prev: any, next: any) => {
+      if (next.saleIdAndValueId && next.saleIdAndValueId.length > 0) {
+        next.saleIdAndValueId.forEach((item: string) => {
+          let [saleAttrId, saleAttrValueId] = item.split(":");
+          prev.push({ saleAttrId, saleAttrValueId });
+        });
+      }
+      return prev;
+    },
+    []
+  );
+  //发送添加请求
+  let result = await reqAddSku(skuParams);
+  console.log(result);
+  if (result.code == 200) {
+    ElMessage.success("添加成功");
+    $emit("changeScene", { flag: 0, params: "update" });
+  } else {
+    ElMessage.error(result.message || "添加失败");
+  }
+};
 </script>
 <style scoped></style>

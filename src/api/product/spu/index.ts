@@ -6,7 +6,8 @@ import type {
   SaleAttrResponseData,
   HasSaleAttrResponseData,
   SpuData,
-  SkuData,
+  SkuResponseData,
+  SkuInfoData,
 } from "./type";
 enum API {
   SPU_LIST_URL = "/admin/product/",
@@ -23,17 +24,12 @@ enum API {
   ADDSPU_URL = "/admin/product/saveSpuInfo",
   //修改spu属性
   UPDATESPU_URL = "/admin/product/updateSpuInfo",
-
-  //sku分页列表
-  SKU_LIST_URL = "/admin/product/list/",
-  //获取商品图片列表
-  SKU_IMAGE_URL = "/admin/product/skuImageList/",
-  //获取销售属性
-  SKU_SALE_ATTR_URL = "/admin/product/skuSaleAttrList/",
-  //根据spuId获取sku列表
-  SKU_BY_SPU_URL = "/admin/product/findBySpuId/",
   //添加sku
   ADDSKU_URL = "/admin/product/saveSkuInfo",
+  //查看sku
+  SKUINFO_URL = "/admin/product/findBySpuId/",
+  //删除已有spu
+  REMOVE_URL = "/admin/product/deleteSpu/",
 }
 
 export const reqSPUList = (
@@ -65,18 +61,11 @@ export const reqAddOrUpdateSpu = (data: SpuData) => {
   }
 };
 
-//获取sku分页列表
-export const reqSkuList = (page: number, limit: number) =>
-  request.get<any, any>(API.SKU_LIST_URL + `${page}/${limit}`);
-//获取sku图片列表
-export const reqSkuImageList = (spuId: number) =>
-  request.get<any, any>(API.SKU_IMAGE_URL + spuId);
-//获取sku销售属性
-export const reqSkuSaleAttrList = (spuId: number) =>
-  request.get<any, any>(API.SKU_SALE_ATTR_URL + spuId);
-//根据spuId获取sku列表
-export const reqSkuBySpuId = (spuId: number) =>
-  request.get<any, any>(API.SKU_BY_SPU_URL + spuId);
-
 export const reqAddSku = (data: any) =>
-  request.post<any, SkuData>(API.ADDSKU_URL, data);
+  request.post<any, SkuResponseData>(API.ADDSKU_URL, data);
+//查看sku
+export const reqSkuList = (spuId: number | string) =>
+  request.get<any, SkuInfoData>(API.SKUINFO_URL + spuId);
+
+export const reqRemoveSpu = (spuId: number) =>
+  request.delete<any, any>(API.REMOVE_URL + spuId);

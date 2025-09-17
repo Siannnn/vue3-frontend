@@ -7,11 +7,11 @@ export interface ResponseData {
 //SPU数据的类型
 export interface SpuData {
   id?: number;
-  spuName: string;
+  spuName?: string;
   description: string;
-  category3Id: number | string;
+  category3Id?: number | string;
   spuSaleAttrList: SaleAttr[];
-  tmId: number | string;
+  tmId?: number | string;
   spuImageList?: null | SpuImg[];
 }
 //数组：元素都是SPU类型
@@ -74,6 +74,7 @@ export interface SaleAttr {
   spuSaleAttrValueList: spuSaleAttrValueList; //销售属性值对象
   flag?: boolean; //展示spuForm 属性值tag的input状态
   saleAttrValue?: string; //收集tag销售属性值
+  saleIdAndValueId?: {};
 }
 //spu已有的销售属性接口返回的数据类型
 export interface SaleAttrResponseData extends ResponseData {
@@ -115,6 +116,13 @@ export interface SkuData {
   skuDesc: string;
   skuAttrValueList?: Attr[]; //平台属性
   skuSaleAttrValueList?: SaleAttrId[]; //销售属性
-  skuImageList: SkuImage[];
-  //skuDefaultImg:string //默认图片
+  skuImageList?: SkuImage[];
+  skuDefaultImg: string; //默认图片
+}
+export interface SkuResponseData extends ResponseData {
+  data: SkuData[];
+}
+//获取sku数据接口
+export interface SkuInfoData extends ResponseData {
+  data: SkuData[];
 }

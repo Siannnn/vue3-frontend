@@ -43,13 +43,21 @@
               size="small"
               icon="View"
               title="查看SKU列表"
+              @click="findSku(row)"
             ></el-button>
-            <el-button
-              type="danger"
-              size="small"
-              icon="Delete"
-              title="删除SPU"
-            ></el-button>
+            <el-popconfirm
+              :title="`你确定要删除这个${row.spuName}吗？`"
+              @confirm="deleteSpu(row.id)"
+            >
+              <template #reference>
+                <el-button
+                  type="danger"
+                  size="small"
+                  icon="Delete"
+                  title="删除SPU"
+                ></el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -67,22 +75,42 @@
     </div>
     <SpuForm ref="spu" v-show="scene == 1" @changeScene="changeScene"></SpuForm>
     <SkuForm ref="sku" v-show="scene == 2" @changeScene="changeScene"></SkuForm>
+    <!-- dialogue对话框展示sku -->
+    <el-dialog v-model="show" title="SKU列表">
+      <el-table border :data="skuArr" style="margin: 10px 0">
+        <el-table-column label="SKU名称" prop="skuName"></el-table-column>
+        <el-table-column label="SKU价格" prop="price"></el-table-column>
+        <el-table-column label="SKU重量" prop="weight"></el-table-column>
+        <el-table-column label="SKU图片">
+          <template #="{ row }">
+            <img
+              :src="row.skuDefaultImg"
+              alt=""
+              style="width: 100px; height: 100px"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </el-card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { reqSPUList } from "@/api/product/spu";
+import { ref, watch, onBeforeUnmount } from "vue";
+import { reqSPUList, reqSkuList, reqRemoveSpu } from "@/api/product/spu";
 import useCategoryStore from "@/store/modules/category";
 import type {
   HasSpuResponseData,
   Records,
   SpuData,
+  SkuInfoData,
+  SkuData,
 } from "@/api/product/spu/type";
 import SpuForm from "./spuForm.vue";
 import SkuForm from "./skuForm.vue";
+import { ElMessage } from "element-plus";
 //场景值
-let scene = ref<number>(2);
+let scene = ref<number>(0);
 let CategoryStore = useCategoryStore();
 //获取子组件实例SpuForm
 let spu = ref<any>();
@@ -158,5 +186,35 @@ const addSku = (row: SpuData) => {
   sku.value.initSkuData(CategoryStore.c1ID, CategoryStore.c2ID, row);
   console.log(row);
 };
+//查看sku列表
+let skuArr = ref<SkuData[]>([]); //存储查看的sku数据
+const findSku = async (row: SpuData) => {
+  let result: SkuInfoData = await reqSkuList(row.id as number);
+  console.log(result);
+  if (result.code == 200) {
+    skuArr.value = result.data;
+    show.value = true;
+  }
+};
+
+let show = ref(false); //控制dialogue展示
+//删除spu
+const deleteSpu = (spuId: number) => {
+  reqRemoveSpu(spuId).then((res) => {
+    if (res.code == 200) {
+      //删除成功
+      getSPUList(
+        records.value.length > 1 ? currentPage.value : currentPage.value - 1
+      );
+    } else {
+      //删除失败
+      ElMessage.error("删除失败");
+    }
+  });
+};
+//路由组件销毁前清空仓库（三级分类
+onBeforeUnmount(() => {
+  CategoryStore.$reset();
+});
 </script>
 <style scoped></style>
