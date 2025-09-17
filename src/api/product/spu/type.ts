@@ -12,7 +12,7 @@ export interface SpuData {
   category3Id: number | string;
   spuSaleAttrList: SaleAttr[];
   tmId: number | string;
-  spuImageList: null | SpuImg[];
+  spuImageList?: null | SpuImg[];
 }
 //数组：元素都是SPU类型
 export type Records = SpuData[];
@@ -58,9 +58,10 @@ export interface SaleAttrValue {
   createTime?: string;
   updateTime?: string;
   spuId?: number;
+  isChecked?: null | string;
+
   baseSaleAttrId: number | string; //销售属性id
   saleAttrValueName: string;
-  isChecked?: null | string;
 }
 export type spuSaleAttrValueList = SaleAttrValue[];
 export interface SaleAttr {
@@ -85,4 +86,35 @@ export interface HasSaleAttr {
 }
 export interface HasSaleAttrResponseData extends ResponseData {
   data: HasSaleAttr[];
+}
+
+export interface Attr {
+  attrId: number | string; //平台属性
+  valueId: number | string; //属性值id
+}
+export interface SaleAttrId {
+  saleAttrId: number | string; //销售属性id
+  saleAttrValueId: number | string; //销售属性值
+}
+export interface SkuImage {
+  imgName: string;
+  imgUrl: string;
+  isDefault: string;
+  skuId: 0;
+  spuImgId: 0;
+}
+
+//sku数据类型
+export interface SkuData {
+  category3Id: number | string;
+  spuId: number | string; //spu
+  tmId: string; //品牌
+  skuName: string; //sku名称
+  price: string | number;
+  weight: number | string;
+  skuDesc: string;
+  skuAttrValueList?: Attr[]; //平台属性
+  skuSaleAttrValueList?: SaleAttrId[]; //销售属性
+  skuImageList: SkuImage[];
+  //skuDefaultImg:string //默认图片
 }

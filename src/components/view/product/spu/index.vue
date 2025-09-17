@@ -29,6 +29,7 @@
               size="small"
               icon="Plus"
               title="添加SKU"
+              @click="addSku(row)"
             ></el-button>
             <el-button
               type="primary"
@@ -65,7 +66,7 @@
       />
     </div>
     <SpuForm ref="spu" v-show="scene == 1" @changeScene="changeScene"></SpuForm>
-    <SkuForm v-show="scene == 2"></SkuForm>
+    <SkuForm ref="sku" v-show="scene == 2" @changeScene="changeScene"></SkuForm>
   </el-card>
 </template>
 
@@ -81,10 +82,11 @@ import type {
 import SpuForm from "./spuForm.vue";
 import SkuForm from "./skuForm.vue";
 //场景值
-let scene = ref<number>(0);
+let scene = ref<number>(2);
 let CategoryStore = useCategoryStore();
 //获取子组件实例SpuForm
 let spu = ref<any>();
+let sku = ref<any>();
 let currentPage = ref<number>(1);
 let size = ref<string>("default");
 let limit = ref<number>(3);
@@ -136,6 +138,7 @@ const changeScene = (obj: any) => {
   }
   //再次获取全部已有spu数据
 };
+
 const updateSpu = (row: SpuData) => {
   scene.value = 1; //修改spu
   console.log(row);
@@ -147,5 +150,13 @@ const updateSpu = (row: SpuData) => {
 //   currentPage.value = newPage;
 
 // };
+
+//添加sku
+const addSku = (row: SpuData) => {
+  scene.value = 2;
+  //调用子组件方法初始化 添加sku数据
+  sku.value.initSkuData(CategoryStore.c1ID, CategoryStore.c2ID, row);
+  console.log(row);
+};
 </script>
 <style scoped></style>

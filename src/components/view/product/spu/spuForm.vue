@@ -98,6 +98,7 @@
               @blur="handleInputConfirm"
             /> -->
             <el-input
+              ref="InputRef"
               placeholder="请输入属性值"
               v-if="row.flag == true"
               v-model="row.saleAttrValue"
@@ -198,19 +199,14 @@ let allSaleAttr = ref<HasSaleAttr[]>([]);
 const initHasSpuData = async (spu: SpuData) => {
   SpuParams.value = spu;
   let result: AllTradeMark = await reqAllTradeMark(); //全部品牌数据
-  console.log("品牌列表", result);
   //一个品牌下商品图片
   let result1: SpuHasImg = await reqSpuImageList(spu.id as number);
-  console.log("商品图片", result1);
   //销售属性
   let result2: SaleAttrResponseData = await reqSpuHasSaleAttr(spu.id as number);
-  console.log("销售属性", result2);
   //全部销售属性
   let result3: HasSaleAttrResponseData = await reqAllSaleAttr();
-  console.log("全部销售属性", result3);
   AllTradeMark.value = result.data;
   allSaleAttr.value = result3.data;
-  console.log(result3.data);
   imgList.value = result1.data.map((item) => {
     return {
       name: item.imgName,
@@ -264,7 +260,6 @@ let saleAttrIdAndName = ref<string>("");
 
 //tag 销售属性值
 const InputRef = ref<InputInstance>();
-
 const toEdit = (row: SaleAttr) => {
   row.flag = true;
   row.saleAttrValue = "";
@@ -302,15 +297,18 @@ const save = async () => {
     return {
       id: item.id,
       imgName: item.name,
-      imgUrl: (item.response && item.response.data) || item.url,
+      imgUrl: (item as any).response?.data || item.url,
       spuId: SpuParams.value.id,
     };
   });
+
   //销售属性值
   SpuParams.value.spuSaleAttrList = saleAttr.value;
   //请求
   let result = await reqAddOrUpdateSpu(SpuParams.value);
   console.log(result);
+  console.log(JSON.stringify(SpuParams.value, null, 2));
+
   if (result.code == 200) {
     ElMessage.success("保存成功");
     $emit("changeScene", {
