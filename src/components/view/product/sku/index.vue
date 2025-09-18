@@ -50,7 +50,18 @@
             icon="InfoFilled"
             @click="findSpu(row)"
           ></el-button>
-          <el-button type="text" size="small" icon="Delete"></el-button>
+          
+          <el-popconfirm
+            :title="`你确定要删除这个${row.skuName}吗？`"
+            @confirm="removeSku(row.id)"
+          >
+            <template #reference><el-button
+            type="text"
+            size="small"
+            icon="Delete"
+      
+          </el-button></template>
+        </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -70,39 +81,50 @@
       </template>
       <template #default>
         <el-row style="margin: 10px 0">
-          <el-col>名称</el-col>
-          <el-col>345</el-col>
+          <el-col :span="6">名称</el-col>
+          <el-col :span="18">1</el-col>
         </el-row>
         <el-row style="margin: 10px 0">
-          <el-col :span="123">描述</el-col>
-          <el-col :span="123">345</el-col>
+          <el-col :span="6">描述</el-col>
+          <el-col :span="18">2</el-col>
         </el-row>
         <el-row style="margin: 10px 0">
-          <el-col :span="123">价格</el-col>
-          <el-col :span="123">345</el-col>
+          <el-col :span="6">价格</el-col>
+          <el-col :span="18">3</el-col>
         </el-row>
         <el-row style="margin: 10px 0">
-          <el-col :span="123">平台属性</el-col>
-          <el-col :span="123">
-            <el-tag style="margin: 5px 5px" v-for="item in 10"
-              >{{ item }}
+          <el-col :span="6">平台属性</el-col>
+          <el-col :span="18">
+            <el-tag style="margin: 5px 5px">1 </el-tag>
+          </el-col>
+        </el-row>
+        <el-row style="margin: 10px 0">
+          <el-col :span="8">销售属性</el-col>
+          <el-col :span="12">
+            <el-tag
+              type="info"
+              style="margin: 5px 5px"
+              v-for="item in skuSaleArr"
+              :key="item.id"
+              >{{ item.saleAttrName }}
             </el-tag>
           </el-col>
         </el-row>
         <el-row style="margin: 10px 0">
-          <el-col :span="123">销售属性</el-col>
-          <el-col :span="123">
-            <el-tag type="info" style="margin: 5px 5px" v-for="item in 10"
-              >{{ item }}
-            </el-tag>
-          </el-col>
-        </el-row>
-        <el-row style="margin: 10px 0">
-          <el-col :span="123">商品图片</el-col>
-          <el-col :span="123">
+          <el-col :span="24">
             <el-carousel :interval="4000" type="card" height="200px">
-              <el-carousel-item v-for="item in 6" :key="item">
-                <h3 text="2xl" justify="center">{{ item }}</h3>
+              <el-carousel-item v-for="item in skuImgArr" :key="item.id">
+                <h3 text="2xl" justify="center">{{ item.imgName }}</h3>
+                <img
+                  :src="item.imgUrl"
+                  alt=""
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    background: transparent;
+                  "
+                />
               </el-carousel-item>
             </el-carousel>
           </el-col>
@@ -120,11 +142,15 @@ import {
   reqCancelSale,
   reqSkuInfo,
   reqSkuImageList,
+  reqSkuSaleValueList,reqRemoveSku
 } from "@/api/product/sku/index";
 import type {
   SkuResponseData,
   SkuData,
   SkuInfoData,
+  SkuSaleValueData,
+  SaleAttr,
+  SkuItem,
 } from "@/api/product/sku/type";
 import { ElMessage } from "element-plus";
 
@@ -134,7 +160,9 @@ let limit = ref<number>(3);
 let total = ref<number>(0);
 let skuArr = ref<SkuData[]>([]);
 //抽屉内容
-let skuInfo = ref<SkuData>({});
+let skuInfo = ref<SkuData>();
+let skuSaleArr = ref<SaleAttr[]>([]);
+let skuImgArr = ref<SkuItem[]>([]);
 //页面挂载时请求数据
 onMounted(() => {
   getHasSku();
@@ -173,13 +201,27 @@ const updateSku = () => {
 //控制抽屉
 let drawer = ref<boolean>(false);
 const findSpu = async (row: SkuData) => {
-  console.log("查看商品", row);
+
   drawer.value = true;
-  let result: SkuInfoData = await reqSkuInfo(row.id as number);
+  let result: SkuInfoData = await reqSkuInfo(row.spuID as number);
   let imgResult = await reqSkuImageList(row.spuID as number);
   skuInfo.value = result.data;
+  console.log(result);
   // skuImgArr = imgResult.data;
-  console.log("商品信息", skuInfo.value);
+
+  let result1: SkuSaleValueData = await reqSkuSaleValueList(
+    row.spuID as number
+  );
+  skuSaleArr.value = result1.data;
+  skuImgArr.value = imgResult.data;
+};
+//删除属性
+const removeSku = async (row: SkuData) => {
+  let result = await reqRemoveSku((row as number));
+  if (result.code == 200) {
+    ElMessage.success("删除成功");
+    getHasSku(currentPage.value);
+  }
 };
 </script>
 <style scoped>

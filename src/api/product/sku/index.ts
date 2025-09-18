@@ -1,5 +1,10 @@
 import request from "@/utils/request";
-import type { SkuResponseData, SkuImgResponseData, SkuInfoData } from "./type";
+import type {
+  SkuResponseData,
+  SkuImgResponseData,
+  SkuInfoData,
+  SkuSaleValueData,
+} from "./type";
 enum API {
   //sku分页列表
   SKU_URL = "/admin/product/list/",
@@ -13,6 +18,9 @@ enum API {
   CANCELSALE_URL = "/admin/product/cancelSale/",
   //获取商品信息
   SKU_INFO_URL = "/admin/product/findBySpuId/",
+  //获取商品销售属性
+  SKU_SALE_VALUE_URL = "/admin/product/spuSaleAttrList/",
+  DELETE_URL = "/admin/product/deleteSku/",
 }
 
 export const reqSkuList = (page: number, limit: number) => {
@@ -27,3 +35,8 @@ export const reqSkuInfo = (skuId: number) =>
   request.get<any, SkuInfoData>(API.SKU_INFO_URL + skuId);
 export const reqSkuImageList = (spuId: number) =>
   request.get<any, SkuImgResponseData>(API.SKU_IMAGE_URL + spuId);
+//获取商品销售属性
+export const reqSkuSaleValueList = (id: number) =>
+  request.get<any, SkuSaleValueData>(API.SKU_SALE_VALUE_URL + id);
+export const reqRemoveSku = (id: number) =>
+  request.delete<any, any>(API.DELETE_URL + id);

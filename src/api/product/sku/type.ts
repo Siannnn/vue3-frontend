@@ -7,6 +7,8 @@ export interface ResponseData {
 export interface Attr {
   attrId: number | string; //平台属性
   valueId: number | string; //属性值id
+  valueName?: string; //属性值名称
+  attrName?: string;
 }
 export interface SkuData {
   category3Id?: number | string;
@@ -72,6 +74,12 @@ export interface SkuResponseData extends ResponseData {
   };
 }
 
+export interface SkuItem {
+  id: number;
+  imgName: string;
+  imgUrl: string;
+  spuId: number;
+}
 export interface SkuImgResponseData extends ResponseData {
   data: [
     {
@@ -86,4 +94,9 @@ export interface SkuImgResponseData extends ResponseData {
 //商品信息
 export interface SkuInfoData extends ResponseData {
   data: SkuData;
+}
+
+//获取销售属性值
+export interface SkuSaleValueData extends ResponseData {
+  data: SaleAttr[];
 }
