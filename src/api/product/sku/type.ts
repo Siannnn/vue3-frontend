@@ -9,13 +9,13 @@ export interface Attr {
   valueId: number | string; //属性值id
 }
 export interface SkuData {
-  category3Id: number | string;
-  spuId: number | string; //spu
-  tmId: string; //品牌
-  skuName: string; //sku名称
-  price: string | number;
-  weight: number | string;
-  skuDesc: string;
+  category3Id?: number | string;
+  spuID?: number | string; //spu
+  tmId?: string; //品牌
+  skuName?: string; //sku名称
+  price?: string | number;
+  weight?: number | string;
+  skuDesc?: string;
   skuAttrValueList?: Attr[]; //平台属性
   skuSaleAttrValueList?: [
     {
@@ -32,7 +32,9 @@ export interface SkuData {
       spuImgId: 0;
     },
   ];
-  skuDefaultImg: string; //默认图片
+  skuDefaultImg?: string; //默认图片
+  isSale?: number; //控制商品的上下架
+  id?: number;
 }
 export interface SaleAttr {
   id?: number;
@@ -58,3 +60,30 @@ export interface SaleAttr {
   saleIdAndValueId?: {};
 }
 //获取sku接口返回的数
+export interface SkuResponseData extends ResponseData {
+  data: {
+    records: SkuData[];
+    total: number;
+    size: number;
+    current: number;
+    orders: [];
+    pages: number;
+    searchCount: boolean;
+  };
+}
+
+export interface SkuImgResponseData extends ResponseData {
+  data: [
+    {
+      id: number;
+      createTime: string;
+      imgName: string;
+      imgUrl: string;
+      spuId: number;
+    },
+  ];
+}
+//商品信息
+export interface SkuInfoData extends ResponseData {
+  data: SkuData;
+}
