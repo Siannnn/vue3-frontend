@@ -29,27 +29,45 @@ export interface UserResponseData extends ResponseData {
 }
 //编辑添加用户
 export interface User {
-  id?: number;
+  id: number;
   username: string;
   password: string;
-  name?: string;
+  name: string;
+  roleName: string;
+  phone: string;
 }
 //分配角色
+export interface AllRole {
+  ID: 0;
+  createTime: {
+    "time.Time": "string";
+  };
+  id: 0;
+  remark: "string";
+  roleName: "string";
+  updateTime: {
+    "time.Time": "string";
+  };
+}
 export interface AssignRoleResponseData extends ResponseData {
-  data: [
-    {
-      ID: number;
-      createTime: string;
-      id: number;
-      roleName: string;
-      assignRoles: [
-        {
-          roleName: string;
-          id: number;
-          createTime: string;
-          updateTime: string;
-        },
-      ];
-    },
-  ];
+  data: {
+    ID: number;
+    createTime: string;
+    id: number;
+    roleName: string;
+    assignRoles: [
+      {
+        roleName: string;
+        id: number;
+        createTime: string;
+        updateTime: string;
+      },
+    ];
+    allRolesList: AllRole[];
+  };
+}
+
+export interface SetRoleData {
+  roleIdList: number[];
+  userId: number;
 }

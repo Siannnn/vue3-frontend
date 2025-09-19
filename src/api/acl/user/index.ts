@@ -1,5 +1,10 @@
 import request from "@/utils/request";
-import type { UserResponseData, User, AssignRoleResponseData } from "./type";
+import type {
+  UserResponseData,
+  User,
+  AssignRoleResponseData,
+  SetRoleData,
+} from "./type";
 enum API {
   //获取角色分页信息
   GETUSERLIST_URL = "/admin/acl/user/",
@@ -8,7 +13,9 @@ enum API {
   //编辑更新
   UPDATEUSER_URL = "/admin/acl/user/update",
   //分配角色
-  ASSIGNROLE_URL = "/admin/acl/user/tooAssign",
+  ASSIGNROLE_URL = "/admin/acl/user/toAssign",
+  //为用户分配角色
+  ASSIGNUSERROLE_URL = "/admin/acl/user/doAssignRole",
 }
 
 export const reqGetUserList = (page: number, limit: number) =>
@@ -24,3 +31,6 @@ export const reqAddOdUpdateUser = (data: User) => {
 //分配角色
 export const reqAssignRole = (adminId: number) =>
   request.get<any, AssignRoleResponseData>(API.ASSIGNROLE_URL + `/${adminId}`);
+//为用户分配角色
+export const reqAssignUserRole = (data: SetRoleData) =>
+  request.post<any, any>(API.ASSIGNUSERROLE_URL, data);
