@@ -58,7 +58,9 @@ const Logout = async () => {
   //跳转到登录页面
   try {
     await userStore.userLogout();
+
     $router.push({ path: "/login" });
+    window.location.reload(); //退出登录后，重新刷新页面，防止退出登录后还能访问其他页面
   } catch (err) {
     $router.push({ path: "/login" });
   }
