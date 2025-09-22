@@ -2,18 +2,40 @@
   <el-card style="height: 80px">
     <el-form :inline="true" class="form">
       <el-form-item label="用户名:">
-        <el-input placeholder="请输入用户名" style="width: 800px" clearable />
+        <el-input
+          v-model="keyWord"
+          placeholder="请输入用户昵称"
+          style="width: 800px"
+          clearable
+        />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="small">搜索</el-button>
-        <el-button type="info" size="small">重置</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          :disabled="keyWord ? false : true"
+          @click="search"
+          >搜索</el-button
+        >
+        <el-button type="info" size="small" @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
   </el-card>
   <el-card style="margin-top: 10px">
     <el-button type="primary" size="small" @click="AddUser">添加用户</el-button>
-    <el-button type="danger" size="small">批量删除</el-button>
-    <el-table border style="margin: 10px 0" :data="UserArr">
+    <el-button
+      type="danger"
+      size="small"
+      :disabled="selectIdArr.length > 0 ? false : true"
+      @click="deleteSelectUser"
+      >批量删除</el-button
+    >
+    <el-table
+      @selection-change="selectChange"
+      border
+      style="margin: 10px 0"
+      :data="UserArr"
+    >
       <el-table-column type="selection"></el-table-column>
       <el-table-column label="#" type="index"></el-table-column>
       <el-table-column label="ID" width="80px" prop="id"></el-table-column>
@@ -37,7 +59,17 @@
             @click="updateUser(row)"
             >编辑</el-button
           >
-          <el-button type="primary" size="small" icon="Delete">删除</el-button>
+
+          <el-popconfirm
+            :title="`你确定要删除${row.username}用户吗？`"
+            @confirm="deleteRole(row)"
+          >
+            <template #reference
+              ><el-button type="primary" size="small" icon="Delete"
+                >删除</el-button
+              ></template
+            >
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -146,6 +178,8 @@ import {
   reqAddOdUpdateUser,
   reqAssignRole,
   reqAssignUserRole,
+  reqDeleteUser,
+  reqBatchDeleteUser,
 } from "@/api/acl/user/index";
 import type {
   UserResponseData,
@@ -157,10 +191,11 @@ import type {
   AssignRoleResponseData,
 } from "@/api/acl/user/type";
 import { ElMessage } from "element-plus";
+import useLayoutSettingStore from "@/store/modules/setting";
 //分页器
 let currentPage = ref(1);
 let limit = ref(5);
-let total = ref(50);
+let total = ref(0);
 let UserArr = ref<Records[]>([]);
 //分配角色抽屉
 let drawerRole = ref(false);
@@ -170,9 +205,10 @@ const handler = () => {
 const getHasUser = async (pager = 1) => {
   let result: UserResponseData = await reqGetUserList(
     currentPage.value,
-    limit.value
+    limit.value,
+    keyWord.value
   );
-  console.log(result);
+  console.log("1", result);
   let UserData: UserData = result.data;
   total.value = UserData.total;
   currentPage.value = pager;
@@ -297,7 +333,7 @@ const AssignRole = async (row: User) => {
 
 const saveRole = async () => {
   drawerRole.value = false;
-  roleIdList.value = [1];
+
   let result = await reqAssignUserRole(setRoleData.value as SetRoleData);
   if (result.code == 200) {
     ElMessage({
@@ -327,6 +363,65 @@ const handleCheckedCitiesChange = (value: CheckboxValueType[]) => {
     checkedCount > 0 && checkedCount < allRoleIdList.value.length;
 };
 
+//删除角色
+const deleteRole = async (row: any) => {
+  await reqDeleteUser(row.id).then((result) => {
+    if (result.code == 200) {
+      ElMessage({
+        type: "success",
+        message: "删除用户成功",
+      });
+      getHasUser(
+        UserArr.value.length > 1 ? currentPage.value : currentPage.value - 1
+      );
+    } else {
+      ElMessage({
+        type: "error",
+        message: result.message,
+      });
+    }
+  });
+};
+//批量删除
+//批量删除的id 存储
+const selectIdArr = ref<User[]>([]);
+const selectChange = (value: any) => {
+  selectIdArr.value = value;
+};
+const deleteSelectUser = async () => {
+  let idsList: any = selectIdArr.value.map((item) => item.id);
+  console.log(idsList.value);
+  await reqBatchDeleteUser(idsList).then((result) => {
+    if (result.code == 200) {
+      ElMessage({
+        type: "success",
+        message: "批量删除用户成功",
+      });
+      selectIdArr.value = [];
+      getHasUser(
+        UserArr.value.length > selectIdArr.value.length
+          ? currentPage.value
+          : currentPage.value - 1
+      );
+    } else {
+      ElMessage({
+        type: "error",
+        message: result.message,
+      });
+    }
+  });
+};
+//搜索用户
+//存储搜索的关键字
+const keyWord = ref("");
+const search = () => {
+  getHasUser();
+};
+//重置 setting仓库
+const settingStore = useLayoutSettingStore();
+const reset = () => {
+  settingStore.refresh = !settingStore.refresh;
+};
 onMounted(() => {
   getHasUser();
 });

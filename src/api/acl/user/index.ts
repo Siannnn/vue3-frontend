@@ -16,10 +16,16 @@ enum API {
   ASSIGNROLE_URL = "/admin/acl/user/toAssign",
   //为用户分配角色
   ASSIGNUSERROLE_URL = "/admin/acl/user/doAssignRole",
+  //删除用户
+  DELETEUSER_URL = "/admin/acl/user/remove",
+  //批量删除
+  BATCHDELETEUSER_URL = "/admin/acl/user/batchRemove",
 }
 
-export const reqGetUserList = (page: number, limit: number) =>
-  request.get<any, UserResponseData>(API.GETUSERLIST_URL + `${page}/${limit}`);
+export const reqGetUserList = (page: number, limit: number, username: string) =>
+  request.get<any, UserResponseData>(
+    API.GETUSERLIST_URL + `${page}/${limit}?username=${username}`
+  );
 //新增用户
 export const reqAddOdUpdateUser = (data: User) => {
   if (data.id) {
@@ -34,3 +40,9 @@ export const reqAssignRole = (adminId: number) =>
 //为用户分配角色
 export const reqAssignUserRole = (data: SetRoleData) =>
   request.post<any, any>(API.ASSIGNUSERROLE_URL, data);
+//删除用户
+export const reqDeleteUser = (id: number) =>
+  request.delete<any, any>(API.DELETEUSER_URL + `/${id}`);
+//批量删除
+export const reqBatchDeleteUser = (idList: number[]) =>
+  request.delete<any, any>(API.BATCHDELETEUSER_URL, { data: idList });
