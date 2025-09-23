@@ -20,11 +20,11 @@ export default {
   height: 100%;
   display: flex;
   justify-content: space-between;
-  background-image: linear-gradient(
+  /* background-image: linear-gradient(
     to right,
     rgb(245, 237, 237),
     rgb(217, 199, 199),
     rgb(203, 160, 160)
-  );
+  ); */
 }
 </style>

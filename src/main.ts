@@ -20,13 +20,15 @@ app.use(ElementPlus, {
 import "virtual:svg-icons-register"; //引入svg
 import globalComponent from "./components";
 app.use(globalComponent); //便会触发index.ts中的install方法
+import "element-plus/theme-chalk/dark/css-vars.css"; //暗黑模式
 
 import router from "./router";
 app.use(router);
 import pinia from "./store";
+
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
-import { createPinia } from "pinia";
-app.use(createPinia());
 //测试登录假接口
 // import axios from "axios";
 // axios({

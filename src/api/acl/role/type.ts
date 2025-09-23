@@ -33,13 +33,16 @@ export interface RoleData {
 }
 //菜单列表
 export interface Menu {
-  children: string[];
+  children: [];
   level: number;
   pid: number;
   select: boolean;
   status: string;
   name: string;
+  id: number;
 }
+export type MenuList = Menu[];
+
 export interface MenuResponseData extends ResponseData {
-  data: Menu[];
+  data: MenuList;
 }

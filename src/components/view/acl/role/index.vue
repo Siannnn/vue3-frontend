@@ -22,7 +22,7 @@
       <el-table-column label="更新时间" prop="updateTime"></el-table-column>
       <el-table-column label="操作" width="320px">
         <template #="{ row, $index }">
-          <el-button type="text" size="small" icon="View" @click="Assign"
+          <el-button type="text" size="small" icon="View" @click="Assign(row)"
             >分配权限</el-button
           >
           <el-button
@@ -83,19 +83,20 @@
       </template>
       <template #default>
         <el-tree
+          ref="tree"
           style="max-width: 600px"
-          :data="data"
+          :data="menuArr"
           show-checkbox
           node-key="id"
-          :default-expanded-keys="[2, 3]"
-          :default-checked-keys="[5]"
+          default-expand-all
+          :default-checked-keys="selectArr"
           :props="defaultProps"
         />
       </template>
       <template #footer>
         <div style="flex: auto">
           <el-button plain @click="drawer = false">取消</el-button>
-          <el-button type="primary">确认</el-button>
+          <el-button type="primary" @click="handlerRole">确认</el-button>
         </div>
       </template>
     </el-drawer>
@@ -108,9 +109,16 @@ import {
   reqGetRoleList,
   reqAddOrUpdateRole,
   reqDeleteRole,
+  reqAllMenuList,
   reqGetMenuList,
+  reqSetPermisstion,
 } from "@/api/acl/role/index";
-import type { RoleResponseData, Role, RoleData } from "@/api/acl/role/type";
+import type {
+  RoleResponseData,
+  Role,
+  RoleData,
+  MenuList,
+} from "@/api/acl/role/type";
 import useLayoutSettingStore from "@/store/modules/setting";
 import { ElMessage } from "element-plus";
 let currentPage = ref(1);
@@ -125,6 +133,12 @@ let AddForm = ref<RoleData>({
   remark: "",
 });
 let FormRef = ref();
+//存储菜单
+let menuArr = ref<MenuList>([]);
+//存储菜单几级勾选
+let selectArr = ref([]);
+//获取tree组件实例
+let tree = ref();
 //获取页面角色信息
 const getHasRole = async (pager = 1) => {
   let result: RoleResponseData = await reqGetRoleList(
@@ -220,69 +234,57 @@ const deleteRole = async (row: Role) => {
   }
 };
 //分配权限
-const Assign = async () => {
+const Assign = async (row: RoleData) => {
   drawer.value = true;
+  // console.log(row);
+  // Object.assign(RoleArr.value, row);
   let result = await reqGetMenuList();
-  let Tree = result.data;
+  // let result = await reqAllMenuList(row.id as number);
   console.log(result);
-  let TreeProp = {
-    children: Tree.children,
-    label: Tree.name,
-  };
+  if (result.code == 200) {
+    menuArr.value = result.data;
+    console.log(menuArr.value);
+  } else {
+    ElMessage.error("获取菜单失败");
+  }
+  selectArr.value = filterSelectArr(menuArr.value, []);
+  // let TreeProp = {
+  //   children: Tree.children,
+  //   label: Tree.name,
+  // };
 };
 const defaultProps = {
   children: "children",
-  label: "label",
+  label: "name",
 };
-const data = [
-  {
-    id: 1,
-    label: "Level one 1",
-    children: [
-      {
-        id: 4,
-        label: "Level two 1-1",
-        children: [
-          {
-            id: 9,
-            label: "Level three 1-1-1",
-          },
-          {
-            id: 10,
-            label: "Level three 1-1-2",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    label: "Level one 2",
-    children: [
-      {
-        id: 5,
-        label: "Level two 2-1",
-      },
-      {
-        id: 6,
-        label: "Level two 2-2",
-      },
-    ],
-  },
-  {
-    id: 3,
-    label: "Level one 3",
-    children: [
-      {
-        id: 7,
-        label: "Level two 3-1",
-      },
-      {
-        id: 8,
-        label: "Level two 3-2",
-      },
-    ],
-  },
-];
+
+//过滤四级权限的勾选
+const filterSelectArr = (allData: any, initArr: any) => {
+  allData.forEach((item: any) => {
+    if (item.select && item.level == 4) {
+      initArr.push(item.id);
+    }
+    if (item.children && item.children.length > 0) {
+      filterSelectArr(item.children, initArr);
+    }
+  });
+  return initArr;
+};
+//确定分配角色
+const handlerRole = async () => {
+  const roleId = AddForm.value.id as number;
+  let arr = tree.value.getCheckedKeys();
+  //半选的id
+  let arr1 = tree.value.getHalfCheckedKeys();
+  let result = await reqSetPermisstion(roleId, arr.concat(arr1));
+  console.log(result);
+  if (result.code == 200) {
+    ElMessage.success("分配权限成功");
+    drawer.value = false;
+    window.location.reload();
+  } else {
+    ElMessage.error("分配权限失败");
+  }
+};
 </script>
 <style scoped></style>
