@@ -104,7 +104,7 @@ const Logout = async () => {
 };
 
 //颜色组件
-// const color = ref("rgba(255, 69, 0, 0.68)");
+// const   color = ref("rgba(255, 69, 0, 0.68)");
 const predefineColors = ref([
   "#ff4500",
   "#ff8c00",
