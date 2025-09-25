@@ -1,5 +1,6 @@
 //路由鉴权：什么条件下可以访问
 import router from "./router";
+//@ts-ignore
 import nprogress from "nprogress"; //引入进度条插件
 import "nprogress/nprogress.css"; //引入进度条样式
 nprogress.configure({ showSpinner: false }); //配置进度条
@@ -28,7 +29,8 @@ router.beforeEach(async (to: any, from: any, next: any) => {
         //无信息则发请求获取信息再放行
         try {
           await userStore.userInfo();
-          next();
+          //确保异步路由渲染完毕再放行
+          next({ ...to });
         } catch (error) {
           //token过期
           await userStore.userLogout(); //清除token

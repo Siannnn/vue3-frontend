@@ -1,3 +1,4 @@
+//常量路由
 export const constantRoute = [
   {
     path: "/login",
@@ -30,6 +31,17 @@ export const constantRoute = [
     name: "Screen",
     meta: { title: "数据大屏", hidden: false, icon: "Platform" },
   },
+
+  {
+    path: "/404",
+    component: () => import("@/components/view/404/index.vue"),
+    name: "NotFound",
+    meta: { hidden: true },
+  },
+];
+
+//异步路由
+export const asyncRoute = [
   {
     path: "/acl",
     component: () => import("@/layout/index.vue"),
@@ -119,16 +131,11 @@ export const constantRoute = [
       },
     ],
   },
-  {
-    path: "/404",
-    component: () => import("@/components/view/404/index.vue"),
-    name: "NotFound",
-    meta: { hidden: true },
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    redirect: "/404",
-    name: "all",
-    meta: { hidden: true },
-  },
 ];
+//任意路由
+export const anyRoute = {
+  path: "/:pathMatch(.*)*",
+  redirect: "/404",
+  name: "all",
+  meta: { hidden: true },
+};

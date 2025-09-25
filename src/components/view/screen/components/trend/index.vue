@@ -1,5 +1,5 @@
 <template>
-  <h2>404啦呜哈哈哈哈</h2>
+  <div class="box">trend</div>
 </template>
 
 <script setup lang="ts"></script>

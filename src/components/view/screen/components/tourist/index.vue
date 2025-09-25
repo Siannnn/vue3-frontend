@@ -9,7 +9,7 @@
       <span v-for="item in people">{{ item }}</span>
     </div>
     <!-- echarts展示图形图标 -->
-    <div class="echarts" ref="charts">222</div>
+    <div class="echarts" ref="charts"></div>
   </div>
 </template>
 
@@ -17,11 +17,14 @@
 import { ref, onMounted } from "vue";
 let people = ref("216908");
 import * as echarts from "echarts";
+
 console.log(echarts);
 let charts = ref();
+
 onMounted(() => {
   //获取echarts实例
   let mycharts = echarts.init(charts.value);
+
   //设置实例的配置项
   mycharts.setOption({
     title: {},

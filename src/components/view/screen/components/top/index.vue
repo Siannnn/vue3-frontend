@@ -40,21 +40,21 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 40px;
   display: flex;
-
   .left {
     flex: 1;
-    background-color: rgb(217, 159, 159);
+    // background-color: rgb(217, 159, 159);
     background-size: cover;
     .lbtn {
       width: 150px;
       height: 40px;
       float: right;
       background-size: cover;
-      background-color: aliceblue;
+      // background-color: aliceblue;
       text-align: center;
       line-height: 40px;
       color: #29fcff;
       font-size: 20px;
+      margin-top: 20px;
     }
   }
   .center {
@@ -62,36 +62,39 @@ onBeforeUnmount(() => {
     .title {
       width: 100%;
       height: 74px;
-      background-color: royalblue;
+      // background-color: royalblue;
       background-size: 100% 100%;
       text-align: center;
       line-height: 74px;
       font-size: 40px;
-      font-size: #29fcff;
+      color: #29fcff;
+      margin-top: -5px;
     }
   }
   .right {
     flex: 1;
-    background-color: rgb(217, 159, 159);
+    // background-color: rgb(217, 159, 159);
     background-size: cover;
     display: flex;
     justify-content: space-between;
     .rbtn {
       width: 150px;
       height: 40px;
-      background-color: aliceblue;
+      // background-color: aliceblue;
       background-size: 100% 100%;
       text-align: center;
       line-height: 40px;
       color: #29fcff;
       font-size: 20px;
+      margin-top: 20px;
     }
     .time {
       color: #29fcff;
-      margin-right: 10px;
+      margin-right: 20px;
       text-align: center;
       line-height: 40px;
       font-size: 20px;
+      margin-top: 20px;
     }
   }
 }
