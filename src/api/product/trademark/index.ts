@@ -2,6 +2,7 @@
 import request from "@/utils/request";
 import type { TradeMarkResponseData, TradeMark } from "./type";
 //接口地址
+//@ts-ignore
 enum API {
   TRADEMARK_URL = "/admin/product/baseTrademark/",
   ADDTRADEMARK_URL = "/admin/product/baseTrademark/save",

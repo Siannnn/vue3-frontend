@@ -40,5 +40,7 @@ app.use(pinia);
 //   },
 // });
 import "./permission"; //引入路由鉴权
-
+//引入自定义指令
+import { isHasButton } from "@/api/directive/has";
+isHasButton(app);
 app.mount("#app");

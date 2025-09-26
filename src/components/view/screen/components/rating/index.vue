@@ -86,7 +86,7 @@ const option = {
             color: "rgba(255, 255, 255, 0.7)",
           },
         },
-        formatter: function (params) {
+        formatter: function (params: any) {
           var index = datas.map((item) => item.name).indexOf(params);
           index = index + 1;
           debugger;
@@ -105,7 +105,7 @@ const option = {
         color: "#aae9ff",
         inside: true,
         padding: [-20, 70, 20, 20],
-        formatter: function (value, index) {
+        formatter: function (index: any) {
           return "{a|" + datas[index].value + "  }" + "{b|座}";
         },
         rich: {
@@ -131,7 +131,7 @@ const option = {
       type: "bar",
       barWidth: 20,
       zlevel: 1,
-      data: datas.map((item, index) => {
+      data: datas.map((item) => {
         return {
           value: item.value,
           itemStyle: {

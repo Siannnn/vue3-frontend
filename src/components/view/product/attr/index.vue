@@ -92,7 +92,7 @@
               </template>
             </el-table-column>
             <el-table-column label="属性值操作">
-              <template #="{ row, $index }">
+              <template #="$index">
                 <el-button
                   size="small"
                   type="danger"

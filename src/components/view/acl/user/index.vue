@@ -5,7 +5,7 @@
         <el-input
           v-model="keyWord"
           placeholder="请输入用户昵称"
-          style="width: 800px"
+          style="width: 750px"
           clearable
         />
       </el-form-item>
@@ -44,7 +44,7 @@
       <el-table-column label="创建时间" prop="createTime"></el-table-column>
       <el-table-column label="更新时间" prop="updateTime"></el-table-column>
       <el-table-column label="操作" width="300px">
-        <template #="{ row, $index }">
+        <template #="{ row }">
           <el-button
             type="primary"
             size="small"
@@ -230,7 +230,14 @@ let UserForm = reactive<User>({
 });
 const AddUser = () => {
   drawer.value = true;
-  Object.assign(UserForm, { id: 0, name: "", username: "", password: "" });
+  Object.assign(UserForm, {
+    id: 0,
+    name: "",
+    username: "",
+    password: "",
+    roleName: "",
+    phone: "",
+  });
   //点击添加按钮时，drawer打开，清空表单校验提醒
   //此时还没有UserForm  所以需要nextTick()
   nextTick(() => {
@@ -274,7 +281,7 @@ const cancel = () => {
 };
 
 //表单校验规则
-const validatorUsername = (rule: any, value: any, callback: any) => {
+const validatorUsername = (_rule: any, value: any, callback: any) => {
   if (value.trim().length >= 5) {
     callback();
   } else {

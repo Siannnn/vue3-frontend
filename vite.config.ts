@@ -46,8 +46,11 @@ export default defineConfig(({ command, mode }: ConfigEnv) => {
         //   changeOrigin: true,
         //   rewrite: (path) => path.replace(/^\/api/, ""),
         // },
-        "/api": {
-          target: "http://127.0.0.1:10086",
+        // "/api": {
+        //   target: "http://127.0.0.1:10086",
+        [env.VITE_APP_BASE_API]: {
+          // 使用环境变量
+          target: env.VITE_SERVE, // 根据环境切换后端地址
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""), // 去掉前面的 /api
         },

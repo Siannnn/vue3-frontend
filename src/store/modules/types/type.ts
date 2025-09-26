@@ -1,8 +1,9 @@
-import type { CategoryObj } from "@/components/view/product/attr/type";
+import type { CategoryObj } from "@/api//product/attr/type";
 export interface UserState {
   token: string | null;
   username: string;
   avatar: string;
+  buttons: string[];
 }
 //定分类仓库state对象的ts类型
 export interface CategoryState {

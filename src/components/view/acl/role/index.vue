@@ -21,8 +21,8 @@
       <el-table-column label="创建时间" prop="createTime"></el-table-column>
       <el-table-column label="更新时间" prop="updateTime"></el-table-column>
       <el-table-column label="操作" width="320px">
-        <template #="{ row, $index }">
-          <el-button type="text" size="small" icon="View" @click="Assign(row)"
+        <template #="{ row }">
+          <el-button type="text" size="small" icon="View" @click="Assign()"
             >分配权限</el-button
           >
           <el-button
@@ -109,7 +109,6 @@ import {
   reqGetRoleList,
   reqAddOrUpdateRole,
   reqDeleteRole,
-  reqAllMenuList,
   reqGetMenuList,
   reqSetPermisstion,
 } from "@/api/acl/role/index";
@@ -234,13 +233,13 @@ const deleteRole = async (row: Role) => {
   }
 };
 //分配权限
-const Assign = async (row: RoleData) => {
+const Assign = async () => {
   drawer.value = true;
   // console.log(row);
   // Object.assign(RoleArr.value, row);
   let result = await reqGetMenuList();
   // let result = await reqAllMenuList(row.id as number);
-  console.log(result);
+  // console.log(result);
   if (result.code == 200) {
     menuArr.value = result.data;
     console.log(menuArr.value);

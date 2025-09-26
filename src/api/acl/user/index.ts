@@ -5,6 +5,7 @@ import type {
   AssignRoleResponseData,
   SetRoleData,
 } from "./type";
+//@ts-ignore
 enum API {
   //获取角色分页信息
   GETUSERLIST_URL = "/admin/acl/user/",

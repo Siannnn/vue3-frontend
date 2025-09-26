@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { Menu } from "./type";
+//@ts-ignore
 enum API {
   //添加新菜单
   ADDNEMENU_URL = "/admin/acl/permission/save",

@@ -9,6 +9,7 @@ import type {
   SkuResponseData,
   SkuInfoData,
 } from "./type";
+//@ts-ignore
 enum API {
   SPU_LIST_URL = "/admin/product/",
   //获取全部品牌数据

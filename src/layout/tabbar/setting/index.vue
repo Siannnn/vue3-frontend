@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import useLayoutSettingStore from "@/store/modules/setting";
 import useUserStore from "@/store/modules/user";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import { useThemeStore } from "@/store/modules/theme";
 let themeStore = useThemeStore();
@@ -88,7 +88,7 @@ const fullScreen = () => {
 };
 const userStore = useUserStore();
 let $router = useRouter(); //获取路由器对象
-let $route = useRoute(); //获取当前路由对象
+// let $route = useRoute(); //获取当前路由对象
 const Logout = async () => {
   //向服务器发出退出请求
   //仓库中数据清空

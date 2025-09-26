@@ -1,7 +1,12 @@
 <template>
   <div>
     <el-card style="max-width: 98%">
-      <el-button type="primary" size="default" icon="Plus" @click="addTrademark"
+      <el-button
+        type="primary"
+        size="default"
+        icon="Plus"
+        @click="addTrademark"
+        v-has="`btn.Trademark.add`"
         >添加品牌</el-button
       >
       <el-table :data="trademarkArr" style="margin: 10px 0px" border>
@@ -67,7 +72,7 @@
       :title="trademarkParams.id ? '修改品牌' : '添加品牌'"
       width="500"
     >
-      <el-form style="width: 80%">
+      <el-form style="width: 80%" ref="formRef">
         <el-form-item label="品牌名称" label-width="80px">
           <el-input
             placeholder="请输入品牌名称"
@@ -116,6 +121,7 @@ import type {
 import { ElMessage } from "element-plus";
 import type { UploadProps } from "element-plus";
 
+// v-if="userStore.buttons.includes('btn.Trademark.add')
 // 定义服务器地址常量
 const SERVER_URL = import.meta.env.VITE_SERVE;
 
@@ -202,7 +208,7 @@ const confirm = async () => {
   //   return;
   // }
   let result: any = await reqAddOrUpdateTrademark(trademarkParams);
-
+  console.log(result);
   if (result.code == 200) {
     ElMessage({
       type: "success",
@@ -246,33 +252,33 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (response) => {
 };
 //获得组件实例
 
-const validatorTmName = (value: any, callBack: any) => {
-  if (value.trim().length >= 2) {
-    callBack();
-  } else {
-    callBack(new Error("品牌名称至少2个字符"));
-  }
-  return true;
-};
+// const validatorTmName = (value: any, callBack: any) => {
+//   if (value.trim().length >= 2) {
+//     callBack();
+//   } else {
+//     callBack(new Error("品牌名称至少2个字符"));
+//   }
+//   return true;
+// };
 
-const validatorlogoURL = (value: any, callBack: any) => {
-  if (value) {
-    callBack();
-  } else {
-    callBack(new Error("请上传品牌logo"));
-  }
-  return true;
-};
-const formRules = {
-  tmName: [
-    {
-      required: true,
-      trigger: "blur",
-      validator: validatorTmName,
-    },
-  ],
-  logoUrl: [{ required: true, trigger: "change", validator: validatorlogoURL }],
-};
+// const validatorlogoURL = (value: any, callBack: any) => {
+//   if (value) {
+//     callBack();
+//   } else {
+//     callBack(new Error("请上传品牌logo"));
+//   }
+//   return true;
+// };
+// const formRules = {
+//   tmName: [
+//     {
+//       required: true,
+//       trigger: "blur",
+//       validator: validatorTmName,
+//     },
+//   ],
+//   logoUrl: [{ required: true, trigger: "change", validator: validatorlogoURL }],
+// };
 //删除已有品牌 气泡
 const removeTrademark = async (id: number) => {
   let result = await reqDeleteTrademark(id);

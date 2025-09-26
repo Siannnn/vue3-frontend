@@ -13,7 +13,7 @@ let userStore = useUserStore(pinia);
 //全局守卫：项目中任意路由切换都会触发的钩子
 
 //全局前置守卫 访问某一路由前会执行的函数
-router.beforeEach(async (to: any, from: any, next: any) => {
+router.beforeEach(async (to: any) => {
   document.title = (setting.title + "-" + to.meta.title) as string; //动态修改网页标题
   nprogress.start(); //进度条开始
   let token = userStore.token || localStorage.getItem("TOKEN");
@@ -21,34 +21,34 @@ router.beforeEach(async (to: any, from: any, next: any) => {
 
   if (token) {
     if (to.path == "/login") {
-      next({ path: "/" }); //如果已经登录还想访问登录页，跳转到首页
+      return { path: "/" }; //如果已经登录还想访问登录页，跳转到首页
     } else {
       if (username) {
-        next(); //放行
+        return true; //放行
       } else {
         //无信息则发请求获取信息再放行
         try {
           await userStore.userInfo();
           //确保异步路由渲染完毕再放行
-          next({ ...to });
+          return { ...to };
         } catch (error) {
           //token过期
           await userStore.userLogout(); //清除token
-          next({ path: "/login", query: { redirect: to.path } }); //跳转登录页
+          return { path: "/login", query: { redirect: to.path } }; //跳转登录页
         }
       }
     }
   } else {
     if (to.path == "/login") {
-      next();
+      return true;
     } else {
-      next({ path: "/login", query: { redirect: to.path } }); //将未登录时想访问的路由传递给登录页
+      return { path: "/login", query: { redirect: to.path } }; //将未登录时想访问的路由传递给登录页
     }
   }
 });
 
 //全局后置守卫
-router.afterEach((to: any, from: any) => {
+router.afterEach(() => {
   nprogress.done(); //进度条结束
 });
 

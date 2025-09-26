@@ -1,7 +1,7 @@
 //属性相关的api请求
 import request from "@/utils/request";
 import type { CategoryResponseData, AttrResponseData, Attr } from "./type";
-
+//@ts-ignores
 enum API {
   C1_URL = "/admin/product/getCategory1",
   C2_URL = "/admin/product/getCategory2/",

@@ -31,12 +31,12 @@
       <el-form-item label="平台属性">
         <el-form :inline="true">
           <el-form-item
-            v-for="(item, index) in attrArr"
+            v-for="item in attrArr"
             :key="item.id"
             :label="item.attrName"
             ><el-select v-model="item.attrIdAndValueId" style="width: 200px">
               <el-option
-                v-for="(attrValue, index) in item.attrValueList"
+                v-for="attrValue in item.attrValueList"
                 :key="attrValue.id"
                 :label="attrValue.valueName"
                 :value="`${item.id}:${attrValue.id}`"
@@ -47,7 +47,7 @@
       <el-form-item label="销售属性">
         <el-form>
           <el-form-item
-            v-for="(item, index) in saleArr"
+            v-for="item in saleArr"
             :key="item.id"
             :label="item.saleAttrName"
           >
@@ -57,7 +57,7 @@
               style="width: 300px"
             >
               <el-option
-                v-for="(saleAttrValue, index) in item.spuSaleAttrValueList"
+                v-for="saleAttrValue in item.spuSaleAttrValueList"
                 :label="saleAttrValue.saleAttrValueName"
                 :key="saleAttrValue.id"
                 :value="`${item.id}:${saleAttrValue.id}`"
@@ -80,7 +80,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template #="{ row, $index }">
+          <template #="row">
             <el-button type="primary" size="small" @click="handler(row)"
               >设置默认</el-button
             >

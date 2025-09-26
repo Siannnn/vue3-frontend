@@ -10,7 +10,7 @@
     <el-table-column label="权限值" prop="code"></el-table-column>
     <el-table-column label="修改时间" prop="updateTime"></el-table-column>
     <el-table-column label="操作" width="320px">
-      <template #="{ row, $index }">
+      <template #="{ row }">
         <el-button
           type="text"
           size="small"

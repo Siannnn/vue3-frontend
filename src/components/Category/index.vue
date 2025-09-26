@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, defineProps } from "vue";
+import { onMounted, defineProps } from "vue";
 import useCategoryStore from "@/store/modules/category";
 let categoryStore = useCategoryStore();
 onMounted(() => {

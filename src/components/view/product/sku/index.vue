@@ -20,7 +20,7 @@
         prop="skuDesc"
       ></el-table-column>
       <el-table-column label="默认图片">
-        <template #="{ row, $index }">
+        <template #="row">
           <img
             :src="row.skuDefaultImg"
             alt=""
@@ -31,7 +31,7 @@
       <el-table-column label="重量(g)" prop="weight"></el-table-column>
       <el-table-column label="价格(元)" prop="price"></el-table-column>
       <el-table-column label="操作" fixed="right" width="220px">
-        <template #="{ row, $index }">
+        <template #="{ row }">
           <el-button
             type="text"
             size="small"

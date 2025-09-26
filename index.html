@@ -21,3 +21,21 @@
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
+
+<script>
+  let routes = [];
+  function filterAsyncRoute(asyncRoute, routes) {
+    return asyncRoute.filter((item) => {
+      if (routes.include < item.name) {
+        if (item.chldren && item.children.length > 0) {
+          //递归过滤二级路由
+          item.children = filterAsyncRoute(item.children, routes);
+        }
+        return true;
+      }
+    });
+  }
+  let guigu = filterAsyncRoute(asyncRoute, routes);
+  //有第二个人登录时，asyncRoute已改变导致无法正确过滤
+  //所以需要拷贝一份asyncRoute
+</script>

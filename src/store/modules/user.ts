@@ -34,6 +34,7 @@ let useUserStore = defineStore("user", {
       menuRoutes: constantRoute, //菜单栏路由数据
       username: "",
       avatar: "",
+      buttons: [""], //存储当前用户是否存在某些按钮
     };
   },
   //处理异步方法
@@ -66,6 +67,7 @@ let useUserStore = defineStore("user", {
       if (result.code == 200) {
         this.username = result.data.name;
         this.avatar = result.data.avatar;
+        this.buttons = result.data.buttons; //存储用户权限按钮
         let userasyncRoute = filterAsyncRoute(
           cloneDeep(asyncRoute),
           result.data.routes

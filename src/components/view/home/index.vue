@@ -19,7 +19,7 @@ let userStore = useUserStore();
 import { getTime } from '@/utils/time';
 import SvgIcon from '@/components/SvgIcon/index.vue'; // 导入组件
 </script>
-<style scoped lang="scss">
+<style scoped >
 .box{
     display:flex;
 

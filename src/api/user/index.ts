@@ -22,6 +22,7 @@ import type {
   userInfoResponseData,
 } from "./type";
 //项目用户相关的请求地址
+//@ts-ignore
 enum API {
   LOGIN_URL = "admin/acl/index/login",
   USERINFO_URL = "admin/acl/index/info",

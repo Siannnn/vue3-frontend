@@ -1,5 +1,5 @@
 <template>
-  <el-form label-width="80px">
+  <el-form label-width="80px" :model="SpuParams">
     <el-form-item label="SPU名称">
       <el-input
         placeholder="请输入SPU名称"
@@ -33,6 +33,8 @@
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
         :before-upload="handlerUpload"
+        :on-success="handleUploadSuccess"
+        :headers="uploadHeaders"
       >
         <el-icon><Plus /></el-icon>
       </el-upload>
@@ -116,7 +118,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120px">
-          <template #="{ row, $index }">
+          <template #="$index">
             <el-button
               type="danger"
               size="small"
@@ -163,6 +165,7 @@ import { ref, computed, nextTick } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import type { InputInstance } from "element-plus";
+
 defineProps(["scene"]);
 
 let $emit = defineEmits(["changeScene"]);
@@ -216,6 +219,13 @@ const initHasSpuData = async (spu: SpuData) => {
   saleAttr.value = result2.data;
 };
 
+// 配置上传请求头
+const uploadHeaders = computed(() => {
+  const token = localStorage.getItem("TOKEN");
+  return {
+    token: token || "",
+  };
+});
 //照片墙点击预览时触发的钩子
 let dialogVisible = ref(false);
 let dialogImageUrl = ref(""); //预览图片地址
@@ -244,7 +254,15 @@ const handlerUpload = (file: any) => {
   }
   return true;
 };
-
+// 添加上传成功的回调
+const handleUploadSuccess = (response: any, file: any) => {
+  console.log("上传成功:", response);
+  // 更新文件列表中的 URL
+  const index = imgList.value.findIndex((item) => item.id === file.uid);
+  if (index !== -1) {
+    imgList.value[index].url = response.data; // 使用服务器返回的 URL
+  }
+};
 //销售属性 过滤出未选择的 saleAttr
 let unSelectSaleAttr = computed(() => {
   let unSelectAttr = allSaleAttr.value.filter((item) => {
@@ -304,6 +322,7 @@ const save = async () => {
 
   //销售属性值
   SpuParams.value.spuSaleAttrList = saleAttr.value;
+  SpuParams.value.spuSaleAttrList.saleAttrValue = "11";
   //请求
   let result = await reqAddOrUpdateSpu(SpuParams.value);
   console.log(result);
