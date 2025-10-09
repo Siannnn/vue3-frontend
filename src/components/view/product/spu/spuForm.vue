@@ -322,7 +322,7 @@ const save = async () => {
 
   //销售属性值
   SpuParams.value.spuSaleAttrList = saleAttr.value;
-  SpuParams.value.spuSaleAttrList.saleAttrValue = "11";
+  // SpuParams.value.spuSaleAttrList.saleAttrValue = "11";
   //请求
   let result = await reqAddOrUpdateSpu(SpuParams.value);
   console.log(result);

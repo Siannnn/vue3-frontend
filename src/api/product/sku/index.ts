@@ -5,8 +5,8 @@ import type {
   SkuInfoData,
   SkuSaleValueData,
 } from "./type";
-//@ts-ignore
-enum API {
+
+const enum API {
   //sku分页列表
   SKU_URL = "/admin/product/list/",
   //获取商品图片列表

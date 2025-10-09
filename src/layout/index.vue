@@ -59,7 +59,9 @@ export default {
     background: $base-menu-background;
     color: white;
     transition: all 0.3s;
-
+    &.fold {
+      width: $base-menu-min-width;
+    }
     .slider-menu {
       background: $base-menu-background;
       height: 100%;
